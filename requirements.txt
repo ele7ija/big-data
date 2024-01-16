@@ -1,4 +1,4 @@
 pandas
 yfinance
 python-dotenv
-pyspark
+pyspark==3.3.0

@@ -45,7 +45,7 @@ services:
         hard: 65536
 
   spark-master:
-    image: bde2020/spark-master:3.0.1-hadoop3.2
+    image: bde2020/spark-master:3.3.0-hadoop3.3
     container_name: spark-master
     ports:
       - 8080:8080
@@ -56,7 +56,7 @@ services:
       - ./hadoop.env
 
   spark-worker1:
-    image: bde2020/spark-worker:3.0.1-hadoop3.2
+    image: bde2020/spark-worker:3.3.0-hadoop3.3
     container_name: spark-worker1
     depends_on:
       - spark-master
@@ -68,7 +68,7 @@ services:
       - ./hadoop.env
 
   spark-worker2:
-    image: bde2020/spark-worker:3.0.1-hadoop3.2
+    image: bde2020/spark-worker:3.3.0-hadoop3.3
     container_name: spark-worker2
     depends_on:
       - spark-master
