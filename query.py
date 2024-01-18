@@ -58,16 +58,24 @@ fullpath = "/data/stocks/*.csv"
 all_rows = spark.read.format("csv") \
     .option("header", "true") \
     .load(HDFS_NAMENODE + fullpath) \
-    .withColumn("filename", F.regexp_extract(F.input_file_name(), "\/(\w+)\.csv", 1))
+    .withColumn("Ticker", F.regexp_extract(F.input_file_name(), "\/(\w+)\.csv", 1))
 
-
-w1 = Window.partitionBy('filename').orderBy(F.col('Date').cast(TimestampType()))
-w2 = Window.partitionBy('filename').orderBy(F.col('Date').cast(TimestampType()))
-w3 = Window.partitionBy('filename').orderBy(F.col('Date').cast(TimestampType()))
-df = all_rows.select('Date', 'Close', 'filename')
+df = all_rows.select('Date', 'Close', 'Ticker')
+w1 = Window.partitionBy('Ticker').orderBy(F.col('Date').cast(TimestampType()))
+w2 = Window.partitionBy('Ticker').orderBy(F.col('Date').cast(TimestampType()))
+w3 = Window.partitionBy('Ticker').orderBy(F.col('Date').cast(TimestampType()))
 first = df.first().Close
 df = df.withColumn('gain', F.when( F.row_number().over(w1) != 1, F.col('Close') / F.lag('Close', 1, first).over(w1)).otherwise(F.lit(1.0)))
 
-wind = Window.partitionBy('filename').rangeBetween(Window.unboundedPreceding, Window.currentRow).orderBy("Date")
+wind = Window.partitionBy('Ticker').rangeBetween(Window.unboundedPreceding, Window.currentRow).orderBy("Date")
 df = df.withColumn('cum', F.product('gain').over(wind))
+
+# Pivot by same values of date and keep like that.
+# df.write.format("csv").mode('overwrite').option('header','true').save(HDFS_NAMENODE + "/curated/cumulative_total_stock_return.csv")
+
+# TODO transform - throw out ETF in name
+# TODO programmatically choose N stocks and generate plot.
+# df = df.filter(F.col('Ticker').isin('NTNX', 'MSFT', 'AAPL')).filter(F.col('Date').between('2018-01-01', '2018-02-28'))
+
+
 df.show(100)

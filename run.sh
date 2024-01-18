@@ -15,7 +15,10 @@ time python download_data.py
 docker cp $SCRIPTPATH/data namenode:/home
 docker exec -it namenode bash -c "hdfs dfsadmin -safemode leave"
 docker exec -it namenode bash -c "hdfs dfs -mkdir /data"
-docker exec -it namenode bash -c "hdfs dfs -put -t 12 /home/data/* /data"
+docker exec -it namenode bash -c "hdfs dfs -mkdir /data/stocks"
+docker exec -it namenode bash -c "hdfs dfs -mkdir /data/transformed"
+docker exec -it namenode bash -c "hdfs dfs -mkdir /data/curated"
+docker exec -it namenode bash -c "hdfs dfs -put -t 12 /home/data/stocks/* /data/stocks"
 
 docker cp $SCRIPTPATH/query.py spark-master:/home
 docker exec -it spark-master bash -c "/spark/bin/spark-submit /home/query.py"
