@@ -24,21 +24,6 @@ quiet_logs(spark)
 
 HDFS_NAMENODE = os.environ["CORE_CONF_fs_defaultFS"]
 
-# Handle only NTNX.
-# ntnx = spark.read.format("csv") \
-#     .option("header", "true") \
-#     .load(HDFS_NAMENODE + "/data/stocks/NTNX.csv")
-
-# w1 = Window.orderBy(F.col('Date').cast(TimestampType()))
-# w2 = Window.orderBy(F.col('Date').cast(TimestampType()))
-# w3 = Window.orderBy(F.col('Date').cast(TimestampType()))
-# df = ntnx.select('Date', 'Close')
-# first = df.first().Close
-# df = df.withColumn('gain', F.col('Close') / F.lag('Close', 1, first).over(w1))
-
-# wind = Window.rangeBetween(Window.unboundedPreceding, Window.currentRow).orderBy("Date")
-# df = df.withColumn('cum', F.product('gain').over(wind))
-
 fullpath = "/transformed/close.csv"
 df = spark.read.format("csv") \
     .option("header", "true") \
