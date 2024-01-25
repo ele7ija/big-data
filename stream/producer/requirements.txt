@@ -1,0 +1,6 @@
+kafka-python
+requests
+protobuf==3.11.0
+yliveticker
+pandas
+yfinance
