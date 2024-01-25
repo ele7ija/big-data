@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os
+from datetime import date, timedelta
 
 from pyspark.sql import SparkSession, Row, Column
 import pyspark.sql.functions as F
@@ -18,7 +19,7 @@ spark = SparkSession \
     .config('spark.sql.pivotMaxValues', 15000) \
     .config('spark.driver.memory', '15g') \
     .config('spark.executor.memory', '12g') \
-    .appName("Stocks statistics") \
+    .appName("Stocks statistics: Curate - Run periodic thread") \
     .getOrCreate()
 quiet_logs(spark)
 
@@ -29,7 +30,8 @@ df = spark.read.format("csv") \
     .option("header", "true") \
     .load(HDFS_NAMENODE + fullpath)
 
-df = df.filter(F.col('Date') > '2018-01-01')
+start = date.today() - timedelta(days=5*365)
+df = df.filter(F.col('Date') > start.strftime('%Y-%m-%d'))
 
 w1 = Window.partitionBy('Ticker').orderBy(F.col('Date').cast(TimestampType()))
 w2 = Window.partitionBy('Ticker').orderBy(F.col('Date').cast(TimestampType()))
@@ -40,14 +42,11 @@ df = df.withColumn('gain', F.when( F.row_number().over(w1) != 1, F.col('Close') 
 wind = Window.partitionBy('Ticker').rangeBetween(Window.unboundedPreceding, Window.currentRow).orderBy("Date")
 df = df.withColumn('CTSR', F.product('gain').over(wind))
 
-# df = df.select('Date', 'Ticker', 'CTSR')
+df = df.drop('gain')
+
 # Pivot by same values of date and keep like that
 df = df.groupBy('Date').pivot('Ticker').agg(F.first('CTSR')).orderBy('Date')
+
 df.write.format("csv").mode('overwrite').option('header','true').save(HDFS_NAMENODE + "/curated/cumulative_total_stock_return_pivot.csv")
-
-# TODO transform - throw out ETF in name
-# TODO programmatically choose N stocks and generate plot.
-# df = df.filter(F.col('Ticker').isin('NTNX', 'MSFT', 'AAPL')).filter(F.col('Date').between('2018-01-01', '2018-02-28'))
-
 
 df.show(1)

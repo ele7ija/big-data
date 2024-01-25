@@ -15,7 +15,7 @@ def quiet_logs(sc):
 spark = SparkSession \
     .builder \
     .master('spark://spark-master:7077') \
-    .appName("Stocks statistics") \
+    .appName("Stock statistics: Transform") \
     .getOrCreate()
 quiet_logs(spark)
 
@@ -26,7 +26,8 @@ transformed = spark.read.format("csv") \
     .option("header", "true") \
     .load(HDFS_NAMENODE + fullpath) \
     .withColumn("Ticker", F.regexp_extract(F.input_file_name(), "\/(\w+)\.csv", 1)) \
-    .select('Date', 'Close', 'Ticker')
+    .select('Date', 'Close', 'Ticker') \
+    .dropna()
 
 transformed.write.format("csv") \
     .mode('overwrite') \
