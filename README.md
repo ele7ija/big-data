@@ -5,13 +5,10 @@ Author: Bojan Poprzen, E2 4/2022
 This GitHub repo contains the final project of the Big Data course.
 
 It contains 2 sub-folders:
-1. `batch` contains an example of processing large amounts of raw data. It uses Apache Spark to efficiently run queries on data stored in Apache Hadoop.
-2. `stream` contains an example of stream processing of large amounts of data. It uses Apache Kafka, custom producers and consumers and InfluxDB as a time-series DB and visualization engine.
+1. `batch` contains an example of batch processing large amounts of raw data and getting something useful out of it. What you get is a nice graph showing how any given stocks performed over any given period of time.
+![Batch processing result](img/result.png)
 
-## Batch processing
+2. `stream` contains an example of stream processing large amounts of incoming data. What you get is a nice dashboard showing how given stocks are currently performing and what is a *dumb* prediction what their price will be in the following instance. It is connected to the live stock market.
+![Stream processing result](img/influxdb-screenshot.png)
 
-![Batch processing diagram](img/batch.png)
-
-## Stream processing
-
-![Stream processing diagram](img/stream.png)
+READMEs in these two folders give instructions how to run each of the processing.

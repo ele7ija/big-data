@@ -1,5 +1,15 @@
 # Batch processing
 
+This folders gives an example of how to process large amounts of data and get something useful out of it. What you can get out of this is a nice graph showing how given stocks performed over a given period of time.
+
+![Nice graph](../img/result.png)
+
+## Architecture
+
+Batch processing uses Apache Spark to efficiently run queries on stock data stored in Apache Hadoop.
+
+![Batch diagram](img/batch.png)
+
 ## Data sizes
 
 ```bash
